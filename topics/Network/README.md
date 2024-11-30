@@ -1,5 +1,5 @@
 ## Network
-### [Назад к оглавлению](/DevQuestions/README.md)
+### [Назад к оглавлению](DevQuestions/README.md)
 <details>
 <summary>В общем, что нужно для общения?</summary><br><b>
 
@@ -394,4 +394,4 @@ APIPA использует диапазон IP-адресов: 169.254.0.1 - 169
 
 </b></details>
 
-### [Назад к оглавлению](/DevQuestions/README.md)
+### [Назад к оглавлению](DevQuestions/README.md)
