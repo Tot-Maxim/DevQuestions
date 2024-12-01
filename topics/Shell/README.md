@@ -1,4 +1,4 @@
-### [Назад к оглавлению](/DevQuestions/README.md)
+### [Назад к оглавлению](../../README.md)
 
 ## Shell Scripting
 
@@ -283,4 +283,4 @@ echo $x
 
 bats
 </b></details>
-### [Назад к оглавлению](/DevQuestions/README.md)
+### [Назад к оглавлению](../../README.md)
