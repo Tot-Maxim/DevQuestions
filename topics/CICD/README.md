@@ -1,4 +1,7 @@
 ### [Назад к оглавлению](../../README.md)
+
+[Jenkins](https://www.jenkins.io/doc/developer/)<br>
+
 ## CI/CD
 
 [CI/CD](#cicd)

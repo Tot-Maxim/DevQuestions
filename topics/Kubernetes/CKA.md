@@ -1,32 +1,34 @@
-# CKA (Certified Kubernetes Administrator)
+### [Назад к оглавлению](../../README.md)
 
-- [CKA (Certified Kubernetes Administrator)](#cka-certified-kubernetes-administrator)
-  - [Setup](#setup)
-  - [Pods](#pods)
-    - [Troubleshooting Pods](#troubleshooting-pods)
-  - [Namespaces](#namespaces)
-  - [Nodes](#nodes)
-  - [Services](#services)
+# CKA (Сертифицированный администратор Kubernetes)
+
+- [CKA (Сертифицированный администратор Kubernetes)](#cka-сертифицированный-администратор-kubernetes)
+  - [Настройка](#настройка)
+  - [Поды](#поды)
+    - [Устранение неполадок с подами](#устранение-неполадок-с-подами)
+  - [Пространства имен](#пространства-имен)
+  - [Узлы](#узлы)
+  - [Сервисы](#сервисы)
   - [ReplicaSets](#replicasets)
-    - [Troubleshooting ReplicaSets](#troubleshooting-replicasets)
-  - [Deployments](#deployments)
-    - [Troubleshooting Deployments](#troubleshooting-deployments)
-  - [Scheduler](#scheduler)
-    - [Node Affinity](#node-affinity)
-  - [Labels and Selectors](#labels-and-selectors)
-    - [Node Selector](#node-selector)
-  - [Taints](#taints)
-  - [Resources Limits](#resources-limits)
-  - [Monitoring](#monitoring)
-  - [Scheduler](#scheduler-1)
+    - [Устранение неполадок с ReplicaSets](#устранение-неполадок-с-replicasets)
+  - [Развертывания](#развертывания)
+    - [Устранение неполадок с развертыванием](#устранение-неполадок-с-развертыванием)
+  - [Планировщик](#планировщик)
+    - [Привязанность к узлу](#привязанность-к-узлу)
+  - [Метки и селекторы](#метки-и-селекторы)
+    - [Селектор узлов](#селектор-узлов)
+  - [Загрязнения](#загрязнения)
+  - [Ограничения ресурсов](#ограничения-ресурсов)
+  - [Мониторинг](#мониторинг)
+  - [Планировщик](#планировщик-1)
 
-## Setup
+## Настройка
 
-* Set up Kubernetes cluster. Use one of the following
-   1. Minikube for local free & simple cluster
-   2. Managed Cluster (EKS, GKE, AKS)
+* Настройте кластер Kubernetes. Используйте один из следующих методов:
+   1. Minikube для локального, бесплатного и простого кластера.
+   2. Управляемый кластер (EKS, GKE, AKS).
 
-* Set aliases
+* Установите псевдонимы
 
 ```
 alias k=kubectl
@@ -37,46 +39,46 @@ alias kr=kubectl run
 alias kg=kubectl get
 ```
 
-## Pods
+## Поды
 
 <details>
-<summary>Run a command to view all the pods in the current namespace</summary><br><b>
+<summary>Запустите команду для просмотра всех подов в текущем пространстве имен</summary><br><b>
 
 `kubectl get pods`
 
-Note: create an alias (`alias k=kubectl`) and get used to `k get po`
+Примечание: создайте псевдоним (`alias k=kubectl`) и привыкните использовать `k get po`.
 </b></details>
 
 <details>
-<summary>Run a pod called "nginx-test" using the "nginx" image</summary><br><b>
+<summary>Запустите под с именем "nginx-test" с использованием образа "nginx"</summary><br><b>
 
 `k run nginx-test --image=nginx`
 </b></details>
 
 <details>
-<summary>Assuming that you have a Pod called "nginx-test", how to remove it?</summary><br><b>
+<summary>Предположим, у вас есть под с именем "nginx-test", как его удалить?</summary><br><b>
 
 `k delete nginx-test`
 </b></details>
 
 <details>
-<summary>In what namespace the <code>etcd</code> pod is running? list the pods in that namespace</summary><br><b>
+<summary>В каком пространстве имен работает под <code>etcd</code>? Перечислите поды в этом пространстве имен</summary><br><b>
 
 `k get po -n kube-system`
 
-Let's say you didn't know in what namespace it is. You could then run `k get po -A | grep etc` to find the Pod and see in what namespace it resides.
+Предположим, вы не знали, в каком пространстве имен он находится. Вы можете запустить `k get po -A | grep etc`, чтобы найти под и увидеть, в каком пространстве имен он находится.
 </b></details>
 
 <details>
-<summary>List pods from all namespaces</summary><br><b>
+<summary>Перечислите поды из всех пространств имен</summary><br><b>
 
 `k get po -A`
 
-The long version would be `kubectl get pods --all-namespaces`.
+Длинная версия будет `kubectl get pods --all-namespaces`.
 </b></details>
 
 <details>
-<summary>Write a YAML of a Pod with two containers and use the YAML file to create the Pod (use whatever images you prefer)</summary><br><b>
+<summary>Напишите YAML для пода с двумя контейнерами и используйте файл YAML для создания пода (используйте любые образы на ваш выбор)</summary><br><b>
 
 ```
 cat > pod.yaml <<EOL
@@ -95,260 +97,255 @@ EOL
 k create -f pod.yaml
 ```
 
-If you ask yourself how would I remember writing all of that? no worries, you can simply run `kubectl run some_pod --image=redis -o yaml --dry-run=client > pod.yaml`. If you ask yourself "how am I supposed to remember this long command" time to change attitude ;)
+Если вы спрашиваете себя, как я могу запомнить написание всего этого? Не беспокойтесь, вы можете просто запустить `kubectl run some_pod --image=redis -o yaml --dry-run=client > pod.yaml`. Если вы задаетесь вопросом "как мне запомнить эту длинную команду", пора изменить отношение ;)
 </b></details>
 
 <details>
-<summary>Create a YAML of a Pod without actually running the Pod with the kubectl command (use whatever image you prefer)</summary><br><b>
+<summary>Создайте YAML для пода, не запуская сам под с помощью команды kubectl (используйте любой образ на ваш выбор)</summary><br><b>
 
 `k run some-pod -o yaml --image nginx-unprivileged --dry-run=client > pod.yaml`
 </b></details>
 
 <details>
-<summary>How to test a manifest is valid?</summary><br><b>
+<summary>Как проверить, является ли манифест действительным?</summary><br><b>
 
-with `--dry-run` flag which will not actually create it, but it will test it and you can find this way, any syntax issues.
+С помощью флага `--dry-run`, который на самом деле не создаст его, но протестирует его и позволит вам найти любые синтаксические ошибки.
 
 `k create -f YAML_FILE --dry-run`
 </b></details>
 
 <details>
-<summary>How to check which image a certain Pod is using?</summary><br><b>
+<summary>Как проверить, какой образ использует конкретный под?</summary><br><b>
 
 `k describe po <POD_NAME> | grep -i image`
 </b></details>
 
 <details>
-<summary>How to check how many containers run in single Pod?</summary><br><b>
+<summary>Как проверить, сколько контейнеров запущено в одном поде?</summary><br><b>
 
-`k get po POD_NAME` and see the number under "READY" column.
+`k get po POD_NAME` и посмотрите число в колонке "READY".
 
-You can also run `k describe po POD_NAME`
+Вы также можете запустить `k describe po POD_NAME`.
 </b></details>
 
 <details>
-<summary>Run a Pod called "remo" with the the latest redis image and the label 'year=2017'</summary><br><b>
+<summary>Запустите под с именем "remo" с последним образом redis и меткой 'year=2017'</summary><br><b>
 
 `k run remo --image=redis:latest -l year=2017`
 </b></details>
 
 <details>
-<summary>List pods and their labels</summary><br><b>
+<summary>Перечислите поды и их метки</summary><br><b>
 
 `k get po --show-labels`
 </b></details>
 
 <details>
-<summary>Delete a Pod called "nm"</summary><br><b>
+<summary>Удалите под с именем "nm"</summary><br><b>
 
 `k delete po nm`
 </b></details>
 
 <details>
-<summary>List all the pods with the label "env=prod"</summary><br><b>
+<summary>Перечислите все поды с меткой "env=prod"</summary><br><b>
 
 `k get po -l env=prod`
 
-To count them: `k get po -l env=prod --no-headers | wc -l`
+Для их подсчета: `k get po -l env=prod --no-headers | wc -l`
 </b></details>
 
 <details>
-<summary>Create a static pod with the image <code>python</code> that runs the command <code>sleep 2017</code></summary><br><b>
+<summary>Создайте статический под с образом <code>python</code>, который выполняет команду <code>sleep 2017</code></summary><br><b>
 
-First change to the directory tracked by kubelet for creating static pod: `cd /etc/kubernetes/manifests` (you can verify path by reading kubelet conf file)
+Сначала перейдите в директорию, отслеживаемую kubelet для создания статического пода: `cd /etc/kubernetes/manifests` (вы можете убедиться в пути, прочитав конфигурационный файл kubelet).
 
-Now create the definition/manifest in that directory
+Теперь создайте определение/манифест в этой директории
 
-`k run some-pod --image=python --command sleep 2017 --restart=Never --dry-run=client -o yaml > status-pod.yaml`
-=======
 `k run some-pod --image=python --command sleep 2017 --restart=Never --dry-run=client -o yaml > static-pod.yaml`
-
 </b></details>
 
 <details>
-<summary>Describe how would you delete a static Pod
-</summary><br><b>
+<summary>Опишите, как вы будете удалять статический под</summary><br><b>
 
-Locate the static Pods directory (look at `staticPodPath` in kubelet configuration file).
+Найдите директорию статических подов (посмотрите на `staticPodPath` в конфигурационном файле kubelet).
 
-Go to that directory and remove the manifest/definition of the staic Pod (`rm <STATIC_POD_PATH>/<POD_DEFINITION_FILE>`)
+Перейдите в эту директорию и удалите манифест/определение статического пода (`rm <STATIC_POD_PATH>/<POD_DEFINITION_FILE>`).
 </b></details>
 
-### Troubleshooting Pods
+### Устранение неполадок с подами
 
 <details>
-<summary>You try to run a Pod but see the status "CrashLoopBackOff". What does it means? How to identify the issue?</summary><br><b>
+<summary>Вы пытаетесь запустить под, но видите статус "CrashLoopBackOff". Что это значит? Как определить проблему?</summary><br><b>
 
-The container failed to run (due to different reasons) and Kubernetes tries to run the Pod again after some delay (= BackOff time).
+Контейнер не удалось запустить (по разным причинам), и Kubernetes пытается запустить под снова после некоторой задержки (= время BackOff).
 
-Some reasons for it to fail:
-  - Misconfiguration - misspelling, non supported value, etc.
-  - Resource not available - nodes are down, PV not mounted, etc.
+Некоторые причины для его сбоя:
+  - Неправильная конфигурация - опечатки, неподдерживаемые значения и т. д.
+  - Ресурс недоступен - узлы отключены, PV не смонтирован и т. д.
 
-Some ways to debug:
+Некоторые способы отладки:
 
 1. `kubectl describe pod POD_NAME`
-   1. Focus on `State` (which should be Waiting, CrashLoopBackOff) and `Last State` which should tell what happened before (as in why it failed)
-2. Run `kubectl logs mypod`
-   1. This should provide an accurate output of 
-   2. For specific container, you can add `-c CONTAINER_NAME`
-3. If you still have no idea why it failed, try `kubectl get events`
-4. 
+   1. Сосредоточьтесь на `State` (который должен быть Waiting, CrashLoopBackOff) и `Last State`, которые расскажут, что произошло до этого (почему он не удалось).
+2. Выполните `kubectl logs mypod`
+   1. Это должно предоставить точный вывод.
+   2. Для конкретного контейнера вы можете добавить `-c CONTAINER_NAME`.
+3. Если вы все еще не понимаете, почему он не удался, попробуйте `kubectl get events`.
 </b></details>
 
 <details>
-<summary>What the error <code>ImagePullBackOff</code> means?</summary><br><b>
+<summary>Что означает ошибка <code>ImagePullBackOff</code>?</summary><br><b>
 
-Most likely you didn't write correctly the name of the image you try to pull and run. Or perhaps it doesn't exists in the registry.
+Скорее всего, вы неверно написали имя образа, который пытаетесь загрузить и запустить. Или, возможно, он не существует в регистре.
 
-You can confirm with `kubectl describe po POD_NAME`
+Вы можете подтвердить это с помощью `kubectl describe po POD_NAME`.
 </b></details>
 
 <details>
-<summary>How to check on which node a certain Pod is running?</summary><br><b>
+<summary>Как проверить, на каком узле запущен определенный под?</summary><br><b>
 
 `k get po POD_NAME -o wide`
 </b></details>
 
 <details>
-<summary>Run the following command: <code>kubectl run ohno --image=sheris</code>. Did it work? why not? fix it without removing the Pod and using any image you would like</summary><br><b>
+<summary>Запустите следующую команду: <code>kubectl run ohno --image=sheris</code>. Сработает ли это? Почему нет? Исправьте это, не удаляя под и используя любой образ на ваш выбор</summary><br><b>
 
-Because there is no such image `sheris`. At least for now :)
+Потому что такого образа `sheris` не существует. По крайней мере, пока :)
 
-To fix it, run `kubectl edit ohno` and modify the following line `- image: sheris` to `- image: redis` or any other image you prefer.
+Чтобы исправить это, выполните `kubectl edit ohno` и измените строку `- image: sheris` на `- image: redis` или любой другой образ, который вам нравится.
 </b></details>
 
 <details>
-<summary>You try to run a Pod but it's in "Pending" state. What might be the reason?</summary><br><b>
+<summary>Вы пытаетесь запустить под, но он находится в состоянии "Pending". В чем может быть причина?</summary><br><b>
 
-One possible reason is that the scheduler which supposed to schedule Pods on nodes, is not running. To verify it, you can run `kubectl get po -A | grep scheduler` or check directly in `kube-system` namespace.
+Одной из возможных причин является то, что планировщик, который должен планировать поды на узлах, не работает. Чтобы проверить это, вы можете запустить `kubectl get po -A | grep scheduler` или проверить прямо в пространстве имен `kube-system`.
 </b></details>
 
 <details>
-<summary>How to view the logs of a container running in a Pod?</summary><br><b>
+<summary>Как просмотреть логи контейнера, работающего в поде?</summary><br><b>
 
 `k logs POD_NAME`
 </b></details>
 
 <details>
-<summary>There are two containers inside a Pod called "some-pod". What will happen if you run <code>kubectl logs some-pod</code></summary><br><b>
+<summary>Внутри пода "some-pod" есть два контейнера. Что произойдет, если вы запустите <code>kubectl logs some-pod</code></summary><br><b>
 
-It won't work because there are two containers inside the Pod and you need to specify one of them with `kubectl logs POD_NAME -c CONTAINER_NAME`
+Это не сработает, потому что внутри пода два контейнера, и вам нужно указать один из них с помощью `kubectl logs POD_NAME -c CONTAINER_NAME`.
 </b></details>
 
-## Namespaces
+## Пространства имен
 
 <details>
-<summary>List all the namespaces</summary><br><b>
+<summary>Перечислите все пространства имен</summary><br><b>
 
 `k get ns`
 </b></details>
 
 <details>
-<summary>Create a namespace called 'alle'</summary><br><b>
+<summary>Создайте пространство имен с именем 'alle'</summary><br><b>
 
 `k create ns alle`
 </b></details>
 
 <details>
-<summary>Check how many namespaces are there</summary><br><b>
+<summary>Проверьте, сколько пространств имен существует</summary><br><b>
 
 `k get ns --no-headers | wc -l`
 </b></details>
 
 <details>
-<summary>Check how many pods exist in the "dev" namespace</summary><br><b>
+<summary>Проверьте, сколько подов существует в пространстве имен "dev"</summary><br><b>
 
 `k get po -n dev`
 </b></details>
 
 <details>
-<summary>Create a pod called "kartos" in the namespace dev. The pod should be using the "redis" image.</summary><br><b>
+<summary>Создайте под с именем "kartos" в пространстве имен dev. Под должен использовать образ "redis".</summary><br><b>
 
-If the namespace doesn't exist already: `k create ns dev`
+Если пространство имен еще не существует: `k create ns dev`
 
 `k run kratos --image=redis -n dev`
 </b></details>
 
 <details>
-<summary>You are looking for a Pod called "atreus". How to check in which namespace it runs?</summary><br><b>
+<summary>Вы ищете под с именем "atreus". Как проверить, в каком пространстве имен он работает?</summary><br><b>
 
 `k get po -A | grep atreus`
 </b></details>
 
-## Nodes
+## Узлы
 
 <details>
-<summary>Run a command to view all nodes of the cluster</summary><br><b>
+<summary>Запустите команду для просмотра всех узлов кластера</summary><br><b>
 
 `kubectl get nodes`
 
-Note: create an alias (`alias k=kubectl`) and get used to `k get no`
+Примечание: создайте псевдоним (`alias k=kubectl`) и привыкните к `k get no`.
 </b></details>
 
 <details>
-<summary>Create a list of all nodes in JSON format and store it in a file called "some_nodes.json"</summary><br><b>
+<summary>Создайте список всех узлов в формате JSON и сохраните его в файл с именем "some_nodes.json"</summary><br><b>
 
 `k get nodes -o json > some_nodes.json`
 </b></details>
 
 <details>
-<summary>Check what labels one of your nodes in the cluster has</summary><br><b>
+<summary>Проверьте, какие метки есть у одного из ваших узлов в кластере</summary><br><b>
 
 `k get no minikube --show-labels`
 </b></details>
 
-## Services
+## Сервисы
 
 <details>
-<summary>Check how many services are running in the current namespace</summary><br><b>
+<summary>Проверьте, сколько сервисов работает в текущем пространстве имен</summary><br><b>
 
 `k get svc`
 </b></details>
 
 <details>
-<summary>Create an internal service called "sevi" to expose the app 'web' on port 1991</summary><br><b>
+<summary>Создайте внутренний сервис с именем "sevi", чтобы открыть приложение 'web' на порту 1991</summary><br><b>
  
 `kubectl expose pod web --port=1991 --name=sevi`
 </b></details>
 
 <details>
-<summary>How to reference by name a service called "app-service" within the same namespace?</summary><br><b>
+<summary>Как сослаться на сервис с именем "app-service" в том же пространстве имен?</summary><br><b>
 
 app-service
 </b></details>
 
 <details>
-<summary>How to check the TargetPort of a service?</summary><br><b>
+<summary>Как проверить TargetPort сервиса?</summary><br><b>
 
 `k describe svc <SERVICE_NAME>`
 </b></details>
 
 <details>
-<summary>How to check what endpoints the svc has?</summary><br><b>
+<summary>Как проверить, какие конечные точки у сервиса?</summary><br><b>
 
 `k describe svc <SERVICE_NAME>`
 </b></details>
 
 <details>
-<summary>How to reference by name a service called "app-service" within a different namespace, called "dev"?</summary><br><b>
+<summary>Как сослаться на сервис с именем "app-service" в другом пространстве имен, называемом "dev"?</summary><br><b>
 
 app-service.dev.svc.cluster.local
 </b></details>
 
 <details>
-<summary>Assume you have a deployment running and you need to create a Service for exposing the pods. This is what is required/known:
+<summary>Предположим, у вас есть развертывание, и вам нужно создать службу для открытия подов. Вот что нужно/известно:
 
-* Deployment name: jabulik
-* Target port: 8080
-* Service type: NodePort
-* Selector: jabulik-app
-* Port: 8080
+* Имя развертывания: jabulik
+* Целевой порт: 8080
+* Тип службы: NodePort
+* Селектор: jabulik-app
+* Порт: 8080
 </summary><br><b>
 
 `kubectl expose deployment jabulik --name=jabulik-service --target-port=8080 --type=NodePort --port=8080 --dry-run=client -o yaml -> svc.yaml`
 
-`vi svc.yaml` (make sure selector is set to `jabulik-app`)
+`vi svc.yaml` (убедитесь, что селектор установлен на `jabulik-app`)
 
 `k apply -f svc.yaml`
 </b></details>
@@ -356,57 +353,57 @@ app-service.dev.svc.cluster.local
 ## ReplicaSets
 
 <details>
-<summary>How to check how many replicasets defined in the current namespace?</summary><br><b>
+<summary>Как проверить, сколько реплика сетов определено в текущем пространстве имен?</summary><br><b>
 
 `k get rs`
 </b></details>
 
 <details>
-<summary>You have a replica set defined to run 3 Pods. You removed one of these 3 pods. What will happen next? how many Pods will there be?</summary><br><b>
+<summary>У вас есть реплика сет, определенный для запуска 3 подов. Вы удалили один из этих 3 подов. Что произойдет дальше? Сколько подов будет?</summary><br><b>
 
-There will still be 3 Pods running theoretically because the goal of the replica set is to ensure that. so if you delete one or more Pods, it will run additional Pods so there are always 3 Pods.
+Теоретически будет все еще 3 пода, потому что цель реплика сета — гарантировать это. Если вы удалите один или несколько подов, он запустит дополнительные поды, чтобы всегда было 3 пода.
 </b></details>
 
 <details>
-<summary>How to check which container image was used as part of replica set called "repli"?</summary><br><b>
+<summary>Как проверить, какой образ контейнера использовался в реплика сете с именем "repli"?</summary><br><b>
 
 `k describe rs repli | grep -i image`
 </b></details>
 
 <details>
-<summary>How to check how many Pods are ready as part of a replica set called "repli"?</summary><br><b>
+<summary>Как проверить, сколько подов готовы в реплика сете с именем "repli"?</summary><br><b>
 
 `k describe rs repli | grep -i "Pods Status"`
 </b></details>
 
 <details>
-<summary>How to delete a replica set called "rori"?</summary><br><b>
+<summary>Как удалить реплика сет с именем "rori"?</summary><br><b>
 
 `k delete rs rori`
 </b></details>
 
 <details>
-<summary>How to modify a replica set called "rori" to use a different image?</summary><br><b>
+<summary>Как изменить реплика сет с именем "rori", чтобы использовать другой образ?</summary><br><b>
 
-`k edis rs rori`
+`k edit rs rori`
 </b></details>
 
 <details>
-<summary>Scale up a replica set called "rori" to run 5 Pods instead of 2</summary><br><b>
+<summary>Увеличьте реплика сет с именем "rori", чтобы запустить 5 подов вместо 2</summary><br><b>
 
 `k scale rs rori --replicas=5`
 </b></details>
 
 <details>
-<summary>Scale down a replica set called "rori" to run 1 Pod instead of 5</summary><br><b>
+<summary>Уменьшите реплика сет с именем "rori", чтобы запустить 1 под вместо 5</summary><br><b>
 
 `k scale rs rori --replicas=1`
 </b></details>
 
-### Troubleshooting ReplicaSets
+### Устранение неполадок с ReplicaSets
 
 <details>
-<summary>Fix the following ReplicaSet definition
+<summary>Исправьте следующее определение ReplicaSet
 
 ```yaml
 apiVersion: apps/v1
@@ -431,12 +428,11 @@ spec:
 ```
 </summary><br><b>
 
-kind should be ReplicaSet and not ReplicaCet :)
-
+kind должен быть ReplicaSet, а не ReplicaCet :)
 </b></details>
 
 <details>
-<summary>Fix the following ReplicaSet definition
+<summary>Исправьте следующее определение ReplicaSet
 
 ```yaml
 apiVersion: apps/v1
@@ -461,65 +457,59 @@ spec:
 ```
 </summary><br><b>
 
-The selector doesn't match the label (cache vs cachy). To solve it, fix cachy so it's cache instead.
-
+Селектор не соответствует метке (cache vs cachy). Чтобы решить это, исправьте cachy так, чтобы это было cache вместо этого.
 </b></details>
 
-## Deployments
+## Развертывания
 
 <details>
-<summary>How to list all the deployments in the current namespace?</summary><br><b>
+<summary>Как перечислить все развертывания в текущем пространстве имен?</summary><br><b>
 
 `k get deploy`
-
 </b></details>
 
 <details>
-<summary>How to check which image a certain Deployment is using?</summary><br><b>
+<summary>Как проверить, какой образ использует определенное развертывание?</summary><br><b>
 
 `k describe deploy <DEPLOYMENT_NAME> | grep image`
-
 </b></details>
 
 <details>
-<summary>Create a file definition/manifest of a deployment called "dep", with 3 replicas that uses the image 'redis'</summary><br><b>
+<summary>Создайте файл определения/манифеста развертывания с именем "dep", с 3 репликами, использующего образ 'redis'</summary><br><b>
 
-`k create deploy dep -o yaml --image=redis --dry-run=client --replicas 3 > deployment.yaml `
-
+`k create deploy dep -o yaml --image=redis --dry-run=client --replicas 3 > deployment.yaml`
 </b></details>
 
 <details>
-<summary>Remove the deployment `depdep`</summary><br><b>
+<summary>Удалите развертывание `depdep`</summary><br><b>
 
 `k delete deploy depdep`
-
 </b></details>
 
 <details>
-<summary>Create a deployment called "pluck" using the image "redis" and make sure it runs 5 replicas</summary><br><b>
+<summary>Создайте развертывание с именем "pluck", используйте образ "redis" и убедитесь, что оно запускает 5 реплик</summary><br><b>
 
 `kubectl create deployment pluck --image=redis --replicas=5`
-
 </b></details>
 
 <details>
-<summary>Create a deployment with the following properties:
+<summary>Создайте развертывание со следующими свойствами:
 
-* called "blufer"
-* using the image "python"
-* runs 3 replicas
-* all pods will be placed on a node that has the label "blufer"
+* с именем "blufer"
+* использует образ "python"
+* запускает 3 реплики
+* все поды будут размещены на узле, который имеет метку "blufer"
 </summary><br><b>
 
 `kubectl create deployment blufer --image=python --replicas=3 -o yaml --dry-run=client > deployment.yaml`
 
-Add the following section (`vi deployment.yaml`):
+Добавьте следующий раздел (`vi deployment.yaml`):
 
 ```
 spec:
   affinity:
     nodeAffinity:
-      requiredDuringSchedlingIgnoredDuringExecution:
+      requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
           - key: blufer
@@ -529,10 +519,10 @@ spec:
 `kubectl apply -f deployment.yaml`
 </b></details>
 
-### Troubleshooting Deployments
+### Устранение неполадок с развертываниями
 
 <details>
-<summary>Fix the following deployment manifest
+<summary>Исправьте следующий манифест развертывания
 
 ```yaml
 apiVersion: apps/v1
@@ -562,11 +552,11 @@ status: {}
 ```
 </summary><br><b>
 
-Change `kind: Deploy` to `kind: Deployment`
+Измените `kind: Deploy` на `kind: Deployment`.
 </b></details>
 
 <details>
-<summary>Fix the following deployment manifest
+<summary>Исправьте следующий манифест развертывания
 
 ```yaml
 apiVersion: apps/v1
@@ -596,17 +586,17 @@ status: {}
 ```
 </summary><br><b>
 
-The selector doesn't match the label (dep vs depdep). To solve it, fix depdep so it's dep instead.
+Селектор не соответствует метке (dep vs depdep). Чтобы решить это, исправьте depdep так, чтобы это было dep вместо этого.
 </b></details>
 
-## Scheduler
+## Планировщик
 
 <details>
-<summary>How to schedule a pod on a node called "node1"?</summary><br><b>
+<summary>Как запланировать под на узле с именем "node1"?</summary><br><b>
 
 `k run some-pod --image=redix -o yaml --dry-run=client > pod.yaml`
 
-`vi pod.yaml` and add:
+`vi pod.yaml` и добавьте:
 
 ```
 spec:
@@ -615,20 +605,20 @@ spec:
 
 `k apply -f pod.yaml`
 
-Note: if you don't have a node1 in your cluster the Pod will be stuck on "Pending" state.
+Примечание: если у вас нет узла node1 в вашем кластере, под будет застревать в состоянии "Pending".
 </b></details>
 
-### Node Affinity
+### Привязанность к узлу
 
 <details>
-<summary>Using node affinity, set a Pod to schedule on a node where the key is "region" and value is either "asia" or "emea"</summary><br><b>
+<summary>Используя привязанность к узлу, установите под для планирования на узле, где ключ "region" и значение либо "asia", либо "emea"</summary><br><b>
 
 `vi pod.yaml`
 
 ```yaml
 affinity:
   nodeAffinity:
-    requiredDuringSchedlingIgnoredDuringExecution:
+    requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
         - key: region
@@ -640,14 +630,14 @@ affinity:
 </b></details>
 
 <details>
-<summary>Using node affinity, set a Pod to never schedule on a node where the key is "region" and value is "neverland"</summary><br><b>
+<summary>Используя привязанность к узлу, установите под так, чтобы он никогда не планировался на узле, где ключ "region" и значение "neverland"</summary><br><b>
 
 `vi pod.yaml`
 
 ```yaml
 affinity:
   nodeAffinity:
-    requiredDuringSchedlingIgnoredDuringExecution:
+    requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
         - key: region
@@ -657,37 +647,36 @@ affinity:
 ```
 </b></details>
 
-## Labels and Selectors
+## Метки и селекторы
 
 <details>
-<summary>How to list all the Pods with the label "app=web"?</summary><br><b>
+<summary>Как перечислить все поды с меткой "app=web"?</summary><br><b>
 
 `k get po -l app=web`
 </b></details>
 
 <details>
-<summary>How to list all objects labeled as "env=staging"?</summary><br><b>
+<summary>Как перечислить все объекты, помеченные как "env=staging"?</summary><br><b>
 
 `k get all -l env=staging`
 </b></details>
 
 <details>
-<summary>How to list all deployments from "env=prod" and "type=web"?</summary><br><b>
+<summary>Как перечислить все развертывания с метками "env=prod" и "type=web"?</summary><br><b>
 
 `k get deploy -l env=prod,type=web`
 </b></details>
 
-### Node Selector
+### Селектор узлов
 
 <details>
-<summary>Apply the label "hw=max" on one of the nodes in your cluster</summary><br><b>
+<summary>Примените метку "hw=max" на одном из узлов вашего кластера</summary><br><b>
 
 `kubectl label nodes some-node hw=max`
-
 </b></details>
 
 <details>
-<summary>Create and run a Pod called `some-pod` with the image `redis` and configure it to use the selector `hw=max`</summary><br><b>
+<summary>Создайте и запустите под с именем `some-pod` с образом `redis` и настройте его на использование селектора `hw=max`</summary><br><b>
 
 ```
 kubectl run some-pod --image=redis --dry-run=client -o yaml > pod.yaml
@@ -700,25 +689,24 @@ spec:
 
 kubectl apply -f pod.yaml
 ```
-
 </b></details>
 
 <details>
-<summary>Explain why node selectors might be limited</summary><br><b>
+<summary>Объясните, почему селекторы узлов могут быть ограничены</summary><br><b>
 
-Assume you would like to run your Pod on all the nodes with with either `hw` set to max or to min, instead of just max. This is not possible with nodeSelectors which are quite simplified and this is where you might want to consider `node affinity`.
+Предположим, вы хотите запустить свой под на всех узлах, у которых либо `hw` установлен на max, либо на min, а не только на max. Это невозможно с селекторами узлов, которые достаточно упрощены, и здесь вы можете рассмотреть возможность использования `node affinity`.
 </b></details>
 
-## Taints
+## Загрязнения
 
 <details>
-<summary>Check if there are taints on node "master"</summary><br><b>
+<summary>Проверьте, есть ли загрязнения на узле "master"</summary><br><b>
 
 `k describe no master | grep -i taints`
 </b></details>
 
 <details>
-<summary>Create a taint on one of the nodes in your cluster with key of "app" and value of "web" and effect of "NoSchedule". Verify it was applied</summary><br><b>
+<summary>Создайте загрязнение на одном из узлов вашего кластера с ключом "app" и значением "web" и эффектом "NoSchedule". Проверьте, было ли оно применено</summary><br><b>
 
 `k taint node minikube app=web:NoSchedule`
 
@@ -726,15 +714,15 @@ Assume you would like to run your Pod on all the nodes with with either `hw` set
 </b></details>
 
 <details>
-<summary>You applied a taint with <code>k taint node minikube app=web:NoSchedule</code> on the only node in your cluster and then executed <code>kubectl run some-pod --image=redis</code>. What will happen?</summary><br><b>
+<summary>Вы применили загрязнение с <code>k taint node minikube app=web:NoSchedule</code> на единственном узле в вашем кластере, а затем выполнили <code>kubectl run some-pod --image=redis</code>. Что произойдет?</summary><br><b>
 
-The Pod will remain in "Pending" status due to the only node in the cluster having a taint of "app=web".
+Под останется в статусе "Pending" из-за того, что единственный узел в кластере имеет загрязнение "app=web".
 </b></details>
 
 <details>
-<summary>You applied a taint with <code>k taint node minikube app=web:NoSchedule</code> on the only node in your cluster and then executed <code>kubectl run some-pod --image=redis</code> but the Pod is in pending state. How to fix it?</summary><br><b>
+<summary>Вы применили загрязнение с <code>k taint node minikube app=web:NoSchedule</code> на единственном узле в вашем кластере, а затем выполнили <code>kubectl run some-pod --image=redis</code>, но под находится в состоянии ожидания. Как это исправить?</summary><br><b>
 
-`kubectl edit po some-pod` and add the following
+`kubectl edit po some-pod` и добавьте следующее
 
 ```
   - effect: NoSchedule
@@ -743,25 +731,25 @@ The Pod will remain in "Pending" status due to the only node in the cluster havi
     value: web
 ```
 
-Exit and save. The pod should be in Running state now.
+Выйдите и сохраните. Под должен теперь находиться в состоянии Running.
 </b></details>
 
 <details>
-<summary>Remove an existing taint from one of the nodes in your cluster</summary><br><b>
+<summary>Удалите существующее загрязнение с одного из узлов вашего кластера</summary><br><b>
 
 `k taint node minikube app=web:NoSchedule-`
 </b></details>
 
-## Resources Limits
+## Ограничения ресурсов
 
 <details>
-<summary>Check if there are any limits on one of the pods in your cluster</summary><br><b>
+<summary>Проверьте, есть ли какие-либо ограничения на одном из подов в вашем кластере</summary><br><b>
 
 `kubectl describe po <POD_NAME> | grep -i limits`
 </b></details>
 
 <details>
-<summary>Run a pod called "yay" with the image "python" and resources request of 64Mi memory and 250m CPU</summary><br><b>
+<summary>Запустите под с именем "yay" с образом "python" и запросами ресурсов на 64Mi памяти и 250m CPU</summary><br><b>
 
 `kubectl run yay --image=python --dry-run=client -o yaml > pod.yaml`
 
@@ -783,7 +771,7 @@ spec:
 </b></details>
 
 <details>
-<summary>Run a pod called "yay2" with the image "python". Make sure it has resources request of 64Mi memory and 250m CPU and the limits are 128Mi memory and 500m CPU</summary><br><b>
+<summary>Запустите под с именем "yay2" с образом "python". Убедитесь, что у него есть запросы ресурсов на 64Mi памяти и 250m CPU, а ограничения составляют 128Mi памяти и 500m CPU</summary><br><b>
 
 `kubectl run yay2 --image=python --dry-run=client -o yaml > pod.yaml`
 
@@ -807,32 +795,31 @@ spec:
 `kubectl apply -f pod.yaml`
 </b></details>
 
-## Monitoring
+## Мониторинг
 
 <details>
-<summary>Deploy metrics-server</summary><br><b>
+<summary>Разверните metrics-server</summary><br><b>
 
 `kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml`
 </b></details>
 
 <details>
-<summary>Using metrics-server, view the following:
+<summary>Используя metrics-server, просмотрите следующее:
 
-* top performing nodes in the cluster
-* top performing Pods
+* поды с наилучшей производительностью в кластере
+* узлы с наилучшей производительностью
 </summary><br><b>
 
-* top nodes: `kubectl top nodes`
-* top pods: `kubectl top pods`
-
+* топ узлы: `kubectl top nodes`
+* топ поды: `kubectl top pods`
 </b></details>
 
-## Scheduler
+## Планировщик
 
 <details>
-<summary>Can you deploy multiple schedulers?</summary><br><b>
+<summary>Можете ли вы развернуть несколько планировщиков?</summary><br><b>
 
-Yes, it is possible. You can run another pod with a command similar to:
+Да, это возможно. Вы можете запустить другой под с командой, подобной следующей:
 
 ```
 spec:
@@ -847,15 +834,15 @@ spec:
 </b></details>
 
 <details>
-<summary>Assuming you have multiple schedulers, how to know which scheduler was used for a given Pod?</summary><br><b>
+<summary>Предположим, у вас есть несколько планировщиков, как узнать, какой планировщик был использован для данного пода?</summary><br><b>
 
-Running `kubectl get events` you can see which scheduler was used.
+Запустив `kubectl get events`, вы можете увидеть, какой планировщик был использован.
 </b></details>
 
 <details>
-<summary>You want to run a new Pod and you would like it to be scheduled by a custom scheduler. How to achieve it?</summary><br><b>
+<summary>Вы хотите запустить новый под и хотите, чтобы его запланировал пользовательский планировщик. Как этого достичь?</summary><br><b>
 
-Add the following to the spec of the Pod:
+Добавьте следующее в спецификацию пода:
 
 ```
 spec:
