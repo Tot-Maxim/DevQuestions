@@ -1,5 +1,6 @@
 ### [Назад к оглавлению](../../README.md)
-# Git
+
+## [Git](https://git-scm.com/docs/git)
 
 ## Оглавление
 1. [Основы Git](#основы-git)

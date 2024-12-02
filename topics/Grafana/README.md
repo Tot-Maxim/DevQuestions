@@ -1,5 +1,6 @@
 ### [Назад к оглавлению](../../README.md)
-# Grafana Documentation
+
+# [Grafana](https://grafana.com/docs/grafana/latest/)
 
 ## Оглавление
 1. [Что такое Grafana?](#Что-такое-grafana)
