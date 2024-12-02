@@ -4,6 +4,11 @@
 ### [SRE](topics/SRE/README.md)
 ### [Terraform](topics/Terraform/README.md)
 ### [CI/CD](topics/CICD/README.md)
+### [Helm](topics/Helm/README.md)
+### [Kubernetes](topics/Kubernetes/README.md)
+### [Git](topics/Git/README.md)
+### [PostgreSQL](topics/PostgreSQL/README.md)
+### [Apache](topics/Apache/README.md)
 
 # Операционная система - Самооценка
 
